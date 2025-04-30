@@ -116,8 +116,6 @@ WITH sales_by_date AS (
     FROM customer_purchases
     GROUP BY market_date
 ),
-
--- Step 2: CTE to rank best and worst days
 ranked_sales AS (
     SELECT 
         market_date,
@@ -125,6 +123,22 @@ ranked_sales AS (
         RANK() OVER (ORDER BY total_sales DESC) AS best_day_rank,
         RANK() OVER (ORDER BY total_sales ASC) AS worst_day_rank
     FROM sales_by_date
+)
+SELECT 
+    market_date,
+    total_sales,
+    'Best Day' AS day_type
+FROM ranked_sales
+WHERE best_day_rank = 1
+
+UNION
+
+SELECT 
+    market_date,
+    total_sales,
+    'Worst Day' AS day_type
+FROM ranked_sales
+WHERE worst_day_rank = 1;
 
 
 
